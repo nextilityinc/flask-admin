@@ -878,7 +878,7 @@ class ModelView(BaseModelView):
                 Form instance
         """
         try:
-            model = self.model()
+            model = self.instantiate_model(form)
             form.populate_obj(model)
             self.session.add(model)
             self._on_model_change(form, model, True)
@@ -895,6 +895,15 @@ class ModelView(BaseModelView):
             self.after_model_change(form, model, True)
 
         return model
+
+    def instantiate_model(self, form):
+        """Called in create_model instead of the model class constructor with
+        no arguments. Subclasses can override this to let Flask-Admin actually
+        call the constructor with values from the "create" form.
+        :param form: Form instance
+        :return: Model instance
+        """
+        return self.model()
 
     def update_model(self, form, model):
         """
